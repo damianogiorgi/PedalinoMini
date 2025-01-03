@@ -114,6 +114,48 @@ unsigned long           wifiLastOn         = 0;
 #define OSCSendMessage(...)
 #else
 
+void TouchOSCSendMessage(byte command, byte data1, byte data2)
+{
+  if (!wifiEnabled || !interfaces[PED_OSC].midiOut) return;
+
+  WiFiUDP myUdp;
+  unsigned int myReceivePort = 8888;
+  myUdp.begin(myReceivePort);
+
+  MicroOscUdp<1024> myOsc(&myUdp, oscRemoteIp, oscRemotePort);
+  unsigned char message[3]; 
+  message[2] = command;
+  message[1] = data1;
+  message[0] = data2;
+
+  DPRINT("TouchOSC Midi message. Command byte: %x Data1: %x Data2: %x ",message[0], message[1], message[2]);
+  myOsc.sendMidi("/midi",message);
+}
+
+void TouchOSCSendNoteOn(byte note, byte velocity, byte channel)
+{
+  byte command =  MidiType(NoteOn) | channel;
+  TouchOSCSendMessage(command ,note, velocity);
+}
+
+void TouchOSCSendNoteOFF(byte note, byte velocity, byte channel)
+{
+  byte command =  MidiType(NoteOff) | channel;
+  TouchOSCSendMessage(command ,note, velocity);
+}
+
+void TouchOSCSendControlChange(byte number, byte value, byte channel)
+{
+  byte command =  MidiType(ControlChange) | channel;
+  TouchOSCSendMessage(command ,number, value);
+}
+
+void TouchOSCSendProgramChange(byte number, byte channel)
+{
+  byte command =  MidiType(ProgramChange) | channel;
+  TouchOSCSendMessage(command ,number, 0b0);
+}
+
 void AppleMidiSendNoteOn(byte note, byte velocity, byte channel)
 {
   if (wifiEnabled && interfaces[PED_RTPMIDI].midiOut) RTP_MIDI.sendNoteOn(note, velocity, channel);
@@ -383,6 +425,7 @@ void OSCSendNoteOn(byte note, byte velocity, byte channel)
   OSCMessage oscMsg(msg.c_str());
   oscMsg.add((float)(velocity / 127.0)).add((int32_t)channel).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
+  TouchOSCSendNoteOn(note,velocity,channel);
 }
 
 void OSCSendNoteOff(byte note, byte velocity, byte channel)
@@ -395,6 +438,7 @@ void OSCSendNoteOff(byte note, byte velocity, byte channel)
   OSCMessage oscMsg(msg.c_str());
   oscMsg.add((float)0).add((int32_t)channel).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
+  TouchOSCSendNoteOFF(note,velocity,channel);
 }
 
 void OSCSendAfterTouchPoly(byte note, byte pressure, byte channel)
@@ -419,6 +463,7 @@ void OSCSendControlChange(byte number, byte value, byte channel)
   OSCMessage oscMsg(msg.c_str());
   oscMsg.add((float)(value / 127.0)).add((int32_t)channel).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
+  TouchOSCSendControlChange(number,value,channel);
 }
 
 void OSCSendProgramChange(byte number, byte channel)
@@ -431,6 +476,7 @@ void OSCSendProgramChange(byte number, byte channel)
   OSCMessage oscMsg(msg.c_str());
   oscMsg.add((int32_t)channel).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
+  TouchOSCSendProgramChange(number,channel);
 }
 
 void OSCSendAfterTouch(byte pressure, byte channel)
@@ -581,48 +627,6 @@ void OSCSendMessage(const char *address, float value)
   OSCMessage oscMsg(address);
   oscMsg.add(value).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
-}
-
-void TouchOSCSendMessage(byte command, byte data1, byte data2)
-{
-  if (!wifiEnabled || !interfaces[PED_OSC].midiOut) return;
-
-  WiFiUDP myUdp;
-  unsigned int myReceivePort = 8888;
-  myUdp.begin(myReceivePort);
-
-  MicroOscUdp<1024> myOsc(&myUdp, oscRemoteIp, oscRemotePort);
-  unsigned char message[3]; 
-  message[2] = command;
-  message[1] = data1;
-  message[0] = data2;
-
-  DPRINT("TouchOSC Midi message. Command byte: %x Data1: %x Data2: %x ",message[0], message[1], message[2]);
-  myOsc.sendMidi("/midi",message);
-}
-
-void TouchOSCSendNoteOn(byte note, byte velocity, byte channel)
-{
-  byte command =  MidiType(NoteOn) | channel;
-  TouchOSCSendMessage(command ,note, velocity);
-}
-
-void TouchOSCSendNoteOFF(byte note, byte velocity, byte channel)
-{
-  byte command =  MidiType(NoteOff) | channel;
-  TouchOSCSendMessage(command ,note, velocity);
-}
-
-void TouchOSCSendControlChange(byte number, byte value, byte channel)
-{
-  byte command =  MidiType(ControlChange) | channel;
-  TouchOSCSendMessage(command ,number, value);
-}
-
-void TouchOSCSendProgramChange(byte number, byte channel)
-{
-  byte command =  MidiType(ProgramChange) | channel;
-  TouchOSCSendMessage(command ,number, 0b0);
 }
 
 #endif  //  NOWIFI
