@@ -19,6 +19,9 @@ __________           .___      .__  .__                 _____  .__       .__    
 #include <OSCMessage.h>
 #include <OSCBundle.h>
 #include <OSCData.h>
+#include <MicroOsc.h>
+#include <MicroOscUdp.h>
+#include <MIDI.h>
 
 // WiFi MIDI interface to comunicate with AppleMIDI/RTP-MDI devices
 
@@ -579,4 +582,47 @@ void OSCSendMessage(const char *address, float value)
   oscMsg.add(value).send(udpMsg).empty();
   oscUDPout.send(udpMsg);
 }
+
+void TouchOSCSendMessage(byte command, byte data1, byte data2)
+{
+  if (!wifiEnabled || !interfaces[PED_OSC].midiOut) return;
+
+  WiFiUDP myUdp;
+  unsigned int myReceivePort = 8888;
+  myUdp.begin(myReceivePort);
+
+  MicroOscUdp<1024> myOsc(&myUdp, oscRemoteIp, oscRemotePort);
+  unsigned char message[3]; 
+  message[2] = command;
+  message[1] = data1;
+  message[0] = data2;
+
+  DPRINT("TouchOSC Midi message. Command byte: %x Data1: %x Data2: %x ",message[0], message[1], message[2]);
+  myOsc.sendMidi("/midi",message);
+}
+
+void TouchOSCSendNoteOn(byte note, byte velocity, byte channel)
+{
+  byte command =  MidiType(NoteOn) | channel;
+  TouchOSCSendMessage(command ,note, velocity);
+}
+
+void TouchOSCSendNoteOFF(byte note, byte velocity, byte channel)
+{
+  byte command =  MidiType(NoteOff) | channel;
+  TouchOSCSendMessage(command ,note, velocity);
+}
+
+void TouchOSCSendControlChange(byte number, byte value, byte channel)
+{
+  byte command =  MidiType(ControlChange) | channel;
+  TouchOSCSendMessage(command ,number, value);
+}
+
+void TouchOSCSendProgramChange(byte number, byte channel)
+{
+  byte command =  MidiType(ProgramChange) | channel;
+  TouchOSCSendMessage(command ,number, 0b0);
+}
+
 #endif  //  NOWIFI
