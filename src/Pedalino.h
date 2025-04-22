@@ -30,7 +30,7 @@ __________           .___      .__  .__                 _____  .__       .__    
 #define ADC_BOARDS        4   //
 #define ADC_INPUTS        4   // ADS1115 number of analog inputs
 #define ADC_CHANNELS      (ADC_BOARDS * ADC_INPUTS)
-#define LEDS             10   // number of WS2812B leds (254 max)
+#define LEDS             16   // number of WS2812B leds (254 max)
 #define LED_RGB_ORDER   RGB   // do not change it, RGB order is managed by program because FastLED library does not support changing RGB order at runtime
 #define SLOTS_ROWS        2
 #define SLOTS_COLS        3
