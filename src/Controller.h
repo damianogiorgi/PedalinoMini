@@ -840,6 +840,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendNoteOn(code, value, channel);
         BLESendNoteOn(code, value, channel);
         OSCSendNoteOn(code, value, channel);
+        TouchOSCSendNoteOn(code,value,channel);
         screen_info(midi::NoteOn, code, value, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
         lastMIDIMessage[currentBank] = {PED_NOTE_ON, code, value, channel};
@@ -852,6 +853,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendNoteOff(code, value, channel);
         BLESendNoteOff(code, value, channel);
         OSCSendNoteOff(code, value, channel);
+        TouchOSCSendNoteOFF(code,value,channel);
         screen_info(midi::NoteOff, code, value, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
         lastMIDIMessage[currentBank] = {PED_NOTE_OFF, code, value, channel};
@@ -868,6 +870,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendControlChange(code, value, channel);
         BLESendControlChange(code, value, channel);
         OSCSendControlChange(code, value, channel);
+        TouchOSCSendControlChange(code,value,channel);
         screen_info(midi::ControlChange, code, value, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
         lastMIDIMessage[currentBank] = {PED_CONTROL_CHANGE, code, value, channel};
@@ -884,6 +887,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendControlChange(code, value, channel);
         BLESendControlChange(code, value, channel);
         OSCSendControlChange(code, value, channel);
+        TouchOSCSendControlChange(code,value,channel);
         screen_info(midi::ControlChange, code, value, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
         lastMIDIMessage[currentBank] = {PED_CONTROL_CHANGE, code, value, channel};
@@ -902,6 +906,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendProgramChange(code, channel);
         BLESendProgramChange(code, channel);
         OSCSendProgramChange(code, channel);
+        TouchOSCSendProgramChange(code,channel);
         screen_info(midi::ProgramChange, code, 0, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
         lastMIDIMessage[currentBank] = {PED_PROGRAM_CHANGE, code, 0, channel};
@@ -920,6 +925,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendControlChange(midi::BankSelect, code, channel);
         BLESendControlChange(midi::BankSelect, code, channel);
         OSCSendControlChange(midi::BankSelect, code, channel);
+        TouchOSCSendControlChange(midi::BankSelect,value,channel);
         // LSB
         DPRINT("CONTROL CHANGE.....Code %3d.....Value %3d.....Channel %2d\n", midi::BankSelect+32, value, channel);
         if (interfaces[PED_USBMIDI].midiOut)  USB_MIDI.sendControlChange(midi::BankSelect+32, value, channel);
@@ -928,6 +934,7 @@ void midi_send(byte message, byte code, byte value, byte channel, bool on_off, b
         ipMIDISendControlChange(midi::BankSelect+32, value, channel);
         BLESendControlChange(midi::BankSelect+32, value, channel);
         OSCSendControlChange(midi::BankSelect+32, value, channel);
+        TouchOSCSendControlChange(midi::BankSelect+32,value,channel);
         screen_info(midi::ControlChange, midi::BankSelect+32, value, channel, range_min, range_max);
         currentMIDIValue[bank][pedal][button] = value;
       }

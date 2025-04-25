@@ -19,7 +19,7 @@ __________           .___      .__  .__                 _____  .__       .__    
 
 #define MODEL           "PedalinoMini™"
 
-#define INTERFACES        6
+#define INTERFACES        7
 #define PROFILES          3
 #define BANKS            21   // 20 banks + 1 bank for global actions
 #define PEDALS            6   // real number of pedals is board specific (see below)
@@ -299,6 +299,7 @@ const char *pedalAnalogResponse[] = {"Linear", "Log", "Antilog"};
 #define PED_IPMIDI              3
 #define PED_BLEMIDI             4
 #define PED_OSC                 5
+#define PED_TOUCHOSC            6
 
 #define PED_DISABLE             0
 #define PED_ENABLE              1
@@ -458,7 +459,8 @@ interface interfaces[] = { "USB MIDI   ", 0,          PED_ENABLE + PED_SHOW, 0, 
                            "RTP-MIDI   ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0,
                            "ipMIDI     ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0,
                            "BLE MIDI   ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0,
-                           "OSC        ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0
+                           "OSC        ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0,
+                           "TouchOSC   ", PED_ENABLE, PED_ENABLE + PED_SHOW, 0, 0
                          };                       // Interfaces Setup
 
 AceButton       bootButton;
