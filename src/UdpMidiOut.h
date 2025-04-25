@@ -40,6 +40,11 @@ AsyncUDP                oscUDPout;                          // A UDP instance to
 AsyncUDP                oscUDPin;                           // A UDP instance to let us receive packets over UDP
 
 IPAddress               oscRemoteIp   = IPADDR_BROADCAST;   // remote IP of an external OSC device (default to subnet broadcast address)
+static WiFiUDP          touchOSCUdp;                        // UDP instance to send TouchOSC packets 
+static bool             touchOSCUDPInitialized = false;     // flag to check if UDP is initialized
+unsigned int            touchOSCReceivePort = 8888;         // local port to listen for TouchOSC packets
+
+
 #endif  // WIFI
 
 String                  oscRemoteHost = "255.255.255.255";  // remote host name of an external OSC device (default to subnet broadcast address)
@@ -595,12 +600,12 @@ void TouchOSCSendMessage(byte command, byte data1, byte data2)
 {
   if (!wifiEnabled || !interfaces[PED_TOUCHOSC].midiOut) return;
 
+  if (!touchOSCUDPInitialized) {
+    touchOSCUdp.begin(touchOSCReceivePort);
+    touchOSCUDPInitialized = true;
+  }
 
-  WiFiUDP myUdp;
-  unsigned int myReceivePort = 8888;
-  myUdp.begin(myReceivePort);
-
-  MicroOscUdp<1024> myOsc(&myUdp, oscRemoteIp, oscRemotePort);
+  MicroOscUdp<1024> myOsc(&touchOSCUdp, oscRemoteIp, oscRemotePort);
   unsigned char message[3]; 
   message[2] = command;
   message[1] = data1;
