@@ -515,6 +515,7 @@ byte  ledsOffBrightness       = 10;   // 0..255
 byte  tapLed                  = 0;
 CRGB  tapColor0               = 0;
 CRGB  tapColor1               = 0;
+byte  numLeds                 = LEDS;  
 
 
 MidiTimeCode  MTC;

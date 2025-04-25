@@ -1520,6 +1520,24 @@ void eeprom_update_osc_parameters(unsigned int localport = 8000, String remoteho
 #endif
 }
 
+void eeprom_update_leds(byte leds = numLeds)
+{
+#ifdef NVS
+  DPRINT("Updating NVS ... ");
+  preferences.begin("Global", false);
+  preferences.putUChar("Leds", leds);
+  preferences.end();
+  DPRINT("done\n");
+  DPRINT("[NVS][Global][Leds]: %d\n", leds);
+#else
+  LEDS = leds;
+  spiffs_save_globals();
+#endif
+
+  // Reinitialize LED-related data structures if needed  
+  leds_refresh();
+}
+
 void eeprom_update_profile(byte profile = currentProfile)
 {
 #ifdef NVS
@@ -1803,6 +1821,7 @@ void eeprom_update_globals()
   eeprom_update_encoder_sensitivity(encoderSensitivity);
   eeprom_update_leds_brightness(ledsOnBrightness, ledsOffBrightness);
   eeprom_update_osc_parameters(oscLocalPort, oscRemoteHost, oscRemotePort);
+  eeprom_update_leds(numLeds);
 #else
   spiffs_save_globals();
 #endif

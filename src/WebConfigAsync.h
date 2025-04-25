@@ -441,7 +441,7 @@ void get_root_page(unsigned int start, unsigned int len) {
   page += SEQUENCES;
   page += F("</dd>");
   page += F("<dt>Leds</dt><dd>");
-  page += LEDS;
+  page += numLeds;
   page += F("</dd>");
   page += F("<dt>Boot Mode</dt><dd>");
   switch (bootMode) {
@@ -4354,7 +4354,7 @@ void get_options_page(unsigned int start, unsigned int len) {
   page += F("<div class='w-50'>");
   page += F("<div class='form-floating'>");
   page += F("<input class='form-control form-control-sm' type='number' id='leds' name='leds' min='0' max='254' value='");
-  page += LEDS;
+  page += numLeds;
   page += F("'>");
   page += F("<label for='leds'>Leds</label>");
   page += F("</div>");
@@ -6103,6 +6103,11 @@ void http_handle_post_options(AsyncWebServerRequest *request) {
 
   if (request->arg("screensavertimeout").toInt() != screenSaverTimeout / 60000) {
     screenSaverTimeout = request->arg("screensavertimeout").toInt() * 60000;
+  }
+
+  //find if numleds has been updated and update the led count
+  if (request->arg("leds").toInt() != numLeds) {
+    numLeds = request->arg("leds").toInt();
   }
 
   if (request->arg("rgborder").toInt() != rgbOrder) {
