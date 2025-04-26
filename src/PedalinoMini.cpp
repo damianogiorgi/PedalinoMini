@@ -593,7 +593,7 @@ void loop1(void * pvParameters)
 
 #ifdef WIFI
     if (wifiEnabled) {
-      //if (WiFi.isConnected())
+    if (WiFi.isConnected())
       {
         if (interfaces[PED_RTPMIDI].midiIn && RTP_MIDI.read())
           DPRINTMIDI("RTP MIDI", RTP_MIDI.getType(), RTP_MIDI.getChannel(), RTP_MIDI.getData1(), RTP_MIDI.getData2());
